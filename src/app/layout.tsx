@@ -17,7 +17,8 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "Pomegrid",
-  description: "A B2B marketplace connecting agricultural producers with global importers.",
+  description:
+    "A B2B marketplace connecting agricultural producers with global importers.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -30,7 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans`}>
+      <body
+        className={`${inter.variable} ${spaceGrotesk.variable} font-sans scrollbar-hide`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
