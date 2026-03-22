@@ -1,7 +1,18 @@
-import { Sprout, LayoutDashboard, Package, Compass, MessageSquare, User, LogOut, X, ShoppingCart } from "lucide-react";
+import {
+  Sprout,
+  LayoutDashboard,
+  Package,
+  Compass,
+  MessageSquare,
+  User,
+  LogOut,
+  X,
+  ShoppingCart,
+} from "lucide-react";
 import Link from "next/link";
 import type { DashboardTab } from "@/screens/Dashboard";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface Props {
   activeTab: DashboardTab;
@@ -26,9 +37,27 @@ const importerItems: { tab: DashboardTab; icon: typeof LayoutDashboard; label: s
   { tab: "profile", icon: User, label: "Profile" },
 ];
 
+const defaultItems: { tab: DashboardTab; icon: typeof LayoutDashboard; label: string }[] = [
+  { tab: "overview", icon: LayoutDashboard, label: "Overview" },
+  { tab: "discover", icon: Compass, label: "Discover" },
+  { tab: "messages", icon: MessageSquare, label: "Messages" },
+  { tab: "profile", icon: User, label: "Profile" },
+];
+
 export const DashboardSidebar = ({ activeTab, onTabChange, open, onClose }: Props) => {
+  const router = useRouter();
   const { user, logout } = useAuth();
-  const items = user?.role === "importer" ? importerItems : farmerItems;
+  const items =
+    user?.role === "importer"
+      ? importerItems
+      : user?.role === "farmer"
+        ? farmerItems
+        : defaultItems;
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
+  };
 
   return (
     <>
@@ -82,14 +111,14 @@ export const DashboardSidebar = ({ activeTab, onTabChange, open, onClose }: Prop
         </nav>
 
         <div className="p-3 border-t border-border">
-          <Link
-            href="/"
-            onClick={() => logout()}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <LogOut className="h-4 w-4" />
             Sign Out
-          </Link>
+          </button>
         </div>
       </aside>
     </>

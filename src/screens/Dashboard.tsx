@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { OverviewTab } from "@/components/dashboard/OverviewTab";
@@ -15,18 +15,39 @@ import { useAuth } from "@/context/AuthContext";
 export type DashboardTab = "overview" | "listings" | "discover" | "messages" | "profile" | "orders";
 
 const Dashboard = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isInitializing } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as DashboardTab | null;
+  const [activeTab, setActiveTab] = useState<DashboardTab>(
+    tabParam && ["overview", "listings", "discover", "messages", "profile", "orders"].includes(tabParam)
+      ? tabParam
+      : "overview",
+  );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isInitializing && !isLoggedIn) {
       router.replace("/login");
     }
-  }, [isLoggedIn, router]);
+  }, [isInitializing, isLoggedIn, router]);
 
+  useEffect(() => {
+    if (
+      tabParam &&
+      ["overview", "listings", "discover", "messages", "profile", "orders"].includes(tabParam)
+    ) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  if (isInitializing) return null;
   if (!isLoggedIn) return null;
+
+  const handleTabChange = (tab: DashboardTab) => {
+    setActiveTab(tab);
+    router.replace(`/dashboard?tab=${tab}`);
+  };
 
   const renderTab = () => {
     switch (activeTab) {
@@ -43,7 +64,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-muted/30 flex">
       <DashboardSidebar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />

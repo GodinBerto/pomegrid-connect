@@ -1,13 +1,21 @@
 import { Bell, Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 interface Props {
   onMenuClick: () => void;
 }
 
 export const DashboardHeader = ({ onMenuClick }: Props) => {
+  const { user } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
+  const initials =
+    user?.name
+      ?.split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2) ?? "PG";
 
   return (
     <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0">
@@ -15,7 +23,9 @@ export const DashboardHeader = ({ onMenuClick }: Props) => {
         <button className="lg:hidden p-2 rounded-lg hover:bg-muted" onClick={onMenuClick}>
           <Menu className="h-5 w-5" />
         </button>
-        <h1 className="font-display text-lg font-semibold hidden sm:block">Hey, Farmer 👋</h1>
+        <h1 className="font-display text-lg font-semibold hidden sm:block">
+          {user ? `Hey, ${user.name.split(" ")[0]}` : "Dashboard"}
+        </h1>
       </div>
 
       <div className="flex items-center gap-3">
@@ -38,7 +48,7 @@ export const DashboardHeader = ({ onMenuClick }: Props) => {
         </button>
 
         <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-semibold">
-          AF
+          {initials}
         </div>
       </div>
     </header>

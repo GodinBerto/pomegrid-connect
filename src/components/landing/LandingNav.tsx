@@ -1,10 +1,13 @@
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sprout, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 export const LandingNav = () => {
+  const router = useRouter();
+  const { isLoggedIn, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
@@ -13,6 +16,12 @@ export const LandingNav = () => {
     { label: "How it Works", href: `${pathname === "/" ? "" : "/"}#how-it-works` },
     { label: "About", href: `${pathname === "/" ? "" : "/"}#about` },
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    setMobileOpen(false);
+    router.push("/");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
@@ -35,12 +44,25 @@ export const LandingNav = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/register">Get Started</Link>
-          </Button>
+          {isLoggedIn ? (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+              <Button size="sm" onClick={handleLogout}>
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/login">Sign in</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/register">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -64,12 +86,27 @@ export const LandingNav = () => {
             </a>
           ))}
           <div className="flex gap-2 pt-2">
-            <Button asChild variant="outline" className="w-full" size="sm">
-              <Link href="/login" className="flex-1">Sign in</Link>
-            </Button>
-            <Button asChild className="w-full" size="sm">
-              <Link href="/register" className="flex-1">Get Started</Link>
-            </Button>
+            {isLoggedIn ? (
+              <>
+                <Button asChild variant="outline" className="w-full" size="sm">
+                  <Link href="/dashboard" className="flex-1" onClick={() => setMobileOpen(false)}>
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button className="w-full" size="sm" onClick={handleLogout}>
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button asChild variant="outline" className="w-full" size="sm">
+                  <Link href="/login" className="flex-1">Sign in</Link>
+                </Button>
+                <Button asChild className="w-full" size="sm">
+                  <Link href="/register" className="flex-1">Get Started</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

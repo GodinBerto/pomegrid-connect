@@ -1,7 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { MapPin, Mail, Phone, Globe, Star, Clock, Handshake, ShieldCheck, MessageSquare, Lock, Package } from "lucide-react";
-import type { TradePartner } from "@/data/partners";
+import type { TradePartner } from "@/lib/api";
 
 interface Props {
   partner: TradePartner | null;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export const PartnerDetailDialog = ({ partner, open, onClose, isLoggedIn, onRequireAuth }: Props) => {
+  const router = useRouter();
   if (!partner) return null;
 
   const initials = partner.name.split(" ").map(n => n[0]).join("");
@@ -21,7 +23,8 @@ export const PartnerDetailDialog = ({ partner, open, onClose, isLoggedIn, onRequ
       onRequireAuth();
       return;
     }
-    // In a real app, this would open messages
+    onClose();
+    router.push("/dashboard?tab=messages");
   };
 
   return (
@@ -135,11 +138,15 @@ export const PartnerDetailDialog = ({ partner, open, onClose, isLoggedIn, onRequ
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Package className="h-4 w-4 shrink-0" />
-                <span>Min. order: {partner.minOrderQty}</span>
+                <span>Min. order: {partner.minOrderQty || "Contact for details"}</span>
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Globe className="h-4 w-4 shrink-0" />
-                <span>{partner.languages.join(", ")}</span>
+                <span>
+                  {partner.languages.length
+                    ? partner.languages.join(", ")
+                    : "Languages not listed"}
+                </span>
               </div>
             </div>
           ) : (

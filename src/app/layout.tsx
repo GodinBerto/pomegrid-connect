@@ -1,19 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import type { CSSProperties } from "react";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-sans",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-display",
-});
 
 export const metadata: Metadata = {
   title: "Pomegrid",
@@ -32,7 +20,15 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${spaceGrotesk.variable} font-sans scrollbar-hide`}
+        className="font-sans scrollbar-hide"
+        style={
+          {
+            "--font-sans":
+              '"Segoe UI", "Helvetica Neue", "Liberation Sans", sans-serif',
+            "--font-display":
+              '"Avenir Next", "Gill Sans", "Trebuchet MS", sans-serif',
+          } as CSSProperties
+        }
       >
         <Providers>{children}</Providers>
       </body>
